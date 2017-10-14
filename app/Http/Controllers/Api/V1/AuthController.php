@@ -110,6 +110,7 @@ class AuthController extends Controller
             JWTAuth::invalidate($request->get('token'));
             return response()->json(['auth'=> true], 200);
         } catch (JWTException $e) {
+            error_log($e->getMessage());
             return response()->json(['error' => 'failed_to_logout,_please_try_again'], 500);
         }
     }
