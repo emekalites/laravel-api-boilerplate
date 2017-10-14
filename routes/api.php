@@ -1,7 +1,5 @@
 <?php
 
-use Illuminate\Http\Request;
-
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -13,6 +11,23 @@ use Illuminate\Http\Request;
 |
 */
 
-Route::middleware('auth:api')->get('/user', function (Request $request) {
-    return $request->user();
+Route::prefix('v1')->namespace('Api\V1')->group(function () {
+    Route::prefix('auth')->group(function () {
+        Route::post('login', 'AuthController@login');
+        Route::post('refresh', 'AuthController@refresh');
+        Route::post('signup', 'AuthController@signUp');
+    });
+
+    Route::group(['middleware' => ['jwt.auth']], function() {
+        Route::get('user', 'AuthController@user');
+        Route::post('logout', 'AuthController@logout');
+
+        // Users
+        Route::get('users', 'UserController@index');            // get all
+        Route::get('users/{id}', 'UserController@show');        // get one
+    });
+
+    Route::get('/',function(){
+        return response()->json(['message' => 'Laravel API.']);
+    });
 });
