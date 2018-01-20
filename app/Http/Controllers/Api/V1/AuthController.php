@@ -6,10 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Role;
 use App\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
-use JWTAuth;
-use Tymon\JWTAuth\Exceptions\JWTException;
-use Tymon\JWTAuth\Exceptions\TokenInvalidException;
 
 class AuthController extends Controller
 {
@@ -24,14 +22,16 @@ class AuthController extends Controller
         $credentials = $request->only('email', 'password');
 
         try {
-            if (! $token = JWTAuth::attempt($credentials)) {
-                return response()->json(['error' => 'invalid_email_or_password'], 401);
+            if ($token = $this->guard()->attempt($credentials)) {
+                $token = $this->respondWithToken($token);
+                return response()->json(compact('token'), 200);
             }
-        } catch (JWTException $e) {
-            return response()->json(['error' => 'could_not_create_token'], 500);
-        }
 
-        return response()->json(compact('token'), 200);
+            return response()->json(['error' => 'invalid email or password'], 401);
+
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'could not create token'], 500);
+        }
     }
 
     /**
@@ -41,16 +41,11 @@ class AuthController extends Controller
      */
     public function refresh()
     {
-        $token = JWTAuth::getToken();
-        if(!$token){
-            return response()->json(['error' => 'token_not_found'], 500);
-        }
-
         try{
-            $token = JWTAuth::refresh($token);
+            $token = $this->respondWithToken($this->guard()->refresh());
             return response()->json(compact('token'), 200);
-        } catch(TokenInvalidException $e){
-            return response()->json(['error' => 'invalid_token'], 500);
+        } catch(\Exception $e){
+            return response()->json(['error' => 'error generating token'], 500);
         }
     }
 
@@ -61,8 +56,8 @@ class AuthController extends Controller
      * @return \Illuminate\Http\JsonResponse
      */
     public function user(Request $request){
-        $user = JWTAuth::toUser($request->token);
-        return response()->json($user, 200);
+        $user = $this->guard()->user();
+        return response()->json(compact('user'), 200);
     }
 
     /**
@@ -89,11 +84,18 @@ class AuthController extends Controller
             $input['password'] = bcrypt($input['password']);
             $user = User::create($input);
             $user->roles()->attach(Role::where('name', 'admin')->first());
-            return response()->json(['auth'=> true], 200);
+
+            $credentials = $request->only('email', 'password');
+            if ($token = $this->guard()->attempt($credentials)) {
+                $token = $this->respondWithToken($token);
+                return response()->json(compact('token'), 200);
+            }
+
+            return response()->json(['error' => 'error'], 401);
 
         } catch (\Exception $e){
             error_log($e->getMessage());
-            return response()->json(['error'=> 'could_not_create_user'], 500);
+            return response()->json(['error'=> 'could not create user'], 500);
         }
     }
 
@@ -105,13 +107,36 @@ class AuthController extends Controller
      */
     public function logout(Request $request)
     {
-        $this->validate($request, ['token' => 'required']);
         try {
-            JWTAuth::invalidate($request->get('token'));
+            $this->guard()->logout();
             return response()->json(['auth'=> true], 200);
-        } catch (JWTException $e) {
+        } catch (\Exception $e) {
             error_log($e->getMessage());
-            return response()->json(['error' => 'failed_to_logout,_please_try_again'], 500);
+            return response()->json(['error' => 'failed to logout, please try again'], 500);
         }
+    }/**
+ * Get the token array structure.
+ *
+ * @param  string $token
+ *
+ * @return \Illuminate\Http\JsonResponse
+ */
+    protected function respondWithToken($token)
+    {
+        return response()->json([
+            'access_token' => $token,
+            'token_type' => 'bearer',
+            'expires_in' => $this->guard()->factory()->getTTL() * 60
+        ]);
+    }
+
+    /**
+     * Get the guard to be used during authentication.
+     *
+     * @return \Illuminate\Contracts\Auth\Guard
+     */
+    public function guard()
+    {
+        return Auth::guard();
     }
 }

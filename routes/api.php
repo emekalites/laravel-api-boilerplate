@@ -19,7 +19,7 @@ Route::prefix('v1')->namespace('Api\V1')->group(function () {
             Route::post('signup', 'AuthController@signUp');
         });
 
-        Route::group(['middleware' => ['jwt.auth']], function() {
+        Route::group(['middleware' => ['api', 'auth:api']], function() {
             Route::get('user', 'AuthController@user');
             Route::post('logout', 'AuthController@logout');
 
