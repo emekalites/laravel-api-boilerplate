@@ -69,8 +69,8 @@ class AuthController extends Controller
     public function signUp(Request $request)
     {
         $validator =  Validator::make($request->all(), [
-            'firstname' => 'required',
-            'lastname' => 'required',
+            'name' => 'required',
+            'username' => 'required|unique:users',
             'email' => 'required|email|unique:users',
             'password' => 'required'
         ]);
@@ -114,13 +114,15 @@ class AuthController extends Controller
             error_log($e->getMessage());
             return response()->json(['error' => 'failed to logout, please try again'], 500);
         }
-    }/**
- * Get the token array structure.
- *
- * @param  string $token
- *
- * @return \Illuminate\Http\JsonResponse
- */
+    }
+
+    /**
+     * Get the token array structure.
+     *
+     * @param  string $token
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
     protected function respondWithToken($token)
     {
         return response()->json([

@@ -46,7 +46,7 @@
             }
 
             .title {
-                font-size: 84px;
+                font-size: 42px;
             }
 
             .links > a {
@@ -68,7 +68,7 @@
         <div class="flex-center position-ref full-height">
             <div class="content">
                 <div class="title m-b-md">
-                    Laravel
+                    You are not supposed to be here :(
                 </div>
             </div>
         </div>
