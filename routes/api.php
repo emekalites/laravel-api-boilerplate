@@ -13,7 +13,7 @@ use Illuminate\Http\Request;
 |
 */
 
-Route::prefix('v1')->namespace('Api\V1')->group(function () {
+Route::namespace('Api\V1')->group(function () {
     Route::group(['middleware' => ['cors']], function() {
         Route::prefix('auth')->group(function () {
             Route::post('login', 'AuthController@login');
