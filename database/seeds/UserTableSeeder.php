@@ -15,12 +15,14 @@ class UserTableSeeder extends Seeder
     {
         $user = new User();
         $user->name = 'Super admin';
-        $user->email = 'super@address.com.ng';
+        $user->email = 'super@test.com';
         $user->password = bcrypt('secret');
-        $user->username = 'supera';
+        $user->username = 'super';
         $user->phone = '+2348000000000';
+        $user->verified = 1;
+        $user->enabled = 1;
         $user->save();
 
-        $user->roles()->save(Role::where('name', 'super')->first());
+        $user->roles()->save(Role::where('name', 'super-admin')->first());
     }
 }

@@ -12,7 +12,7 @@ class DatabaseSeeder extends Seeder
     public function run()
     {
     	$this->call(RoleTableSeeder::class);
-        $this->call(StateLGASeeder::class);
+        $this->call(CountryStateSeeder::class);
         $this->call(UserTableSeeder::class);
     }
 }

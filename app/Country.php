@@ -4,7 +4,7 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Localgovt extends Model
+class Country extends Model
 {
     /**
      * The attributes that aren't mass assignable.
