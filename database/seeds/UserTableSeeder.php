@@ -14,7 +14,8 @@ class UserTableSeeder extends Seeder
     public function run()
     {
         $user = new User();
-        $user->name = 'Super admin';
+        $user->firstname = 'Super';
+        $user->lastname = 'Admin';
         $user->email = 'super@test.com';
         $user->password = bcrypt('secret');
         $user->username = 'super';
