@@ -15,10 +15,10 @@ class MailHandler
     private $name = 'App Name';
     private $email = 'email';
 
-    public function sendEmail($user){
-        $mailer = Mail::send('email.view', ['user' => $user], function ($m) use ($user) {
+    public function sendEmail($data){
+        $mailer = Mail::send($data->template, ['data' => $data], function ($m) use ($data) {
             $m->from($this->email, $this->name);
-            $m->to($user->email, $user->name)->subject('Subject');
+            $m->to($data->email, $data->name)->subject($data->subject);
         });
         return $mailer;
     }
