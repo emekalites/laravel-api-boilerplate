@@ -18,7 +18,7 @@ class CreateUsersTable extends Migration
             $table->string('firstname');
             $table->string('lastname');
             $table->string('email')->unique();
-			$table->timestamp('email_verified_at')->nullable();
+            $table->timestamp('email_verified_at')->nullable();
             $table->string('username');
             $table->string('password');
 			$table->string('phone');
@@ -29,6 +29,9 @@ class CreateUsersTable extends Migration
             $table->rememberToken();
             $table->softDeletes();
             $table->timestamps();
+
+            $table->foreign('state_id')->references('id')->on('states');
+            $table->foreign('country_id')->references('id')->on('countries');
         });
     }
 
