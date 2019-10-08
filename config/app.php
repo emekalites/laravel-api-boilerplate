@@ -179,6 +179,7 @@ return [
          * Optional Package Service Providers...
          */
         Barryvdh\Cors\ServiceProvider::class,
+        Arcanedev\LogViewer\LogViewerServiceProvider::class,
 
     ],
 
