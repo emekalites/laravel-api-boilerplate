@@ -12,13 +12,19 @@ use Mail;
 
 class MailHandler
 {
-    private $name = 'App Name';
-    private $email = 'email';
+    public function sendEmail($mail){
+        $mailer = Mail::send($mail->template, ['mail' => $mail], function ($m) use ($mail) {
+            $m->from($mail->from_email, $mail->from_name);
+            $m->to(strtolower($mail->to_email), $mail->to_name)->subject($mail->subject);
+        });
+        return $mailer;
+    }
 
-    public function sendEmail($data){
-        $mailer = Mail::send($data->template, ['data' => $data], function ($m) use ($data) {
-            $m->from($this->email, $this->name);
-            $m->to($data->email, $data->name)->subject($data->subject);
+    public function sendEmailAttachment($mail){
+        $mailer = Mail::send($mail->template, ['mail' => $mail], function ($m) use ($mail) {
+            $m->from($mail->from_email, $mail->from_name);
+            $m->to(strtolower($mail->to_email), $mail->to_name)->subject($mail->subject);
+            $m->attach($mail->file);
         });
         return $mailer;
     }

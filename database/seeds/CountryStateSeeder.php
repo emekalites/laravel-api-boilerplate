@@ -21,7 +21,12 @@ class CountryStateSeeder extends Seeder
                 Country::create([
                     'id' => $country->id,
                     'name' => $country->name,
-                    'code' => $country->sortname,
+                    'iso2' => $country->iso2,
+                    'iso3' => $country->iso3,
+                    'phone_code' => str_replace(str_replace($country->phone_code, '+', ''), '-', ''),
+                    'capital' => $country->capital,
+                    'currency' => $country->currency,
+                    'currency_symbol' => $country->currency_symbol,
                     'slug' => str_replace(' ', '-', $country->name),
                 ]);
             }
@@ -30,8 +35,9 @@ class CountryStateSeeder extends Seeder
             $states = json_decode(file_get_contents($states_json));
             foreach ($states as $state){
                 State::create([
-                    'country_id' => $state->country_id,
                     'name' => $state->name,
+                    'state_code' => $state->state_code,
+                    'country_id' => $state->country_id,
                 ]);
             }
         }

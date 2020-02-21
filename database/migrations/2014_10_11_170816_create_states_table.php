@@ -17,6 +17,7 @@ class CreateStatesTable extends Migration
             $table->increments('id');
             $table->integer('country_id')->unsigned();
             $table->string('name');
+            $table->string('state_code');
             $table->timestamps();
 
             $table->foreign('country_id')->references('id')->on('countries');
